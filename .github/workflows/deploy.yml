@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - polish-and-deploy
+      - metadata-description
   workflow_dispatch:
 
 permissions:
@@ -33,6 +34,21 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Build static site
         run: npm run build
+      - name: Verify static export
+        run: |
+          test -s out/index.html
+          test -s out/recipe/lemon-pasta/index.html
+          test -s out/404.html
+          grep -Fq '<title>NextBites | Feel-good recipes for every craving</title>' out/index.html
+          grep -Fq '<meta name="description" content="Discover easy, feel-good recipes.' out/index.html
+          grep -Fq 'Lemon Garden Pasta' out/recipe/lemon-pasta/index.html
+          grep -Fq 'That bite went missing.' out/404.html
+          {
+            echo "### Static export checks"
+            echo "- Home page and metadata: passed."
+            echo "- Lemon Garden Pasta route: passed."
+            echo "- Custom 404 page: passed."
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -48,3 +64,33 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify deployed pages
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          PAGE_URL="${PAGE_URL%/}/"
+
+          home_status="$(curl --fail --silent --show-error --location --retry 8 --retry-delay 5 --retry-all-errors --output /tmp/nextbites-home.html --write-out '%{http_code}' "$PAGE_URL")"
+          test "$home_status" = "200"
+          grep -Fq '<title>NextBites | Feel-good recipes for every craving</title>' /tmp/nextbites-home.html
+          grep -Fq '<meta name="description" content="Discover easy, feel-good recipes.' /tmp/nextbites-home.html
+
+          recipe_url="${PAGE_URL}recipe/lemon-pasta/"
+          recipe_status="$(curl --fail --silent --show-error --location --retry 8 --retry-delay 5 --retry-all-errors --output /tmp/nextbites-recipe.html --write-out '%{http_code}' "$recipe_url")"
+          test "$recipe_status" = "200"
+          grep -Fq 'Lemon Garden Pasta' /tmp/nextbites-recipe.html
+          grep -Fq 'Ingredients' /tmp/nextbites-recipe.html
+          grep -Fq 'Method' /tmp/nextbites-recipe.html
+
+          missing_url="${PAGE_URL}recipe/does-not-exist/"
+          missing_status="$(curl --silent --show-error --location --output /tmp/nextbites-missing.html --write-out '%{http_code}' "$missing_url")"
+          test "$missing_status" = "404"
+          grep -Fq 'That bite went missing.' /tmp/nextbites-missing.html
+
+          {
+            echo "### Live deployment smoke checks"
+            printf -- '- Home: [%s](%s) — HTTP %s; title and description verified.\n' "$PAGE_URL" "$PAGE_URL" "$home_status"
+            printf -- '- Recipe: [%s](%s) — HTTP %s; ingredients and method verified.\n' "$recipe_url" "$recipe_url" "$recipe_status"
+            printf -- '- Unknown recipe: [%s](%s) — HTTP %s; custom not-found page verified.\n' "$missing_url" "$missing_url" "$missing_status"
+          } >> "$GITHUB_STEP_SUMMARY"
