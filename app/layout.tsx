@@ -3,8 +3,9 @@ import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "NextBites | Good food, made simple",
-  description: "Find your next favorite meal with fresh, feel-good recipes.",
+  title: "NextBites | Feel-good recipes for every craving",
+  description:
+    "Discover easy, feel-good recipes. Search by recipe or cuisine, then explore ingredients and step-by-step cooking instructions.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
