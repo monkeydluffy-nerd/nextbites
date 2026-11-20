@@ -606,6 +606,103 @@ main {
   text-align: center;
 }
 
+.state-page,
+.loading-page {
+  display: grid;
+  min-height: calc(100vh - 132px);
+  place-items: center;
+  padding: 48px 0 70px;
+}
+
+.state-card {
+  width: min(100%, 540px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  padding: 42px 32px;
+  text-align: center;
+  box-shadow: 0 12px 34px rgb(36 53 46 / 5%);
+}
+
+.state-code {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  margin: 0 auto 18px;
+  border-radius: 16px;
+  background: #e9efdf;
+  color: var(--green);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.state-card h1 {
+  margin: 10px 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(30px, 5vw, 40px);
+  font-weight: 500;
+  letter-spacing: -1.2px;
+}
+
+.state-card > p:not(.eyebrow) {
+  max-width: 380px;
+  margin: 0 auto 22px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.state-action {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 24px;
+  background: var(--green);
+  padding: 0 18px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  transition: background-color 160ms ease;
+}
+
+.state-action:hover {
+  background: #244e3a;
+}
+
+.loading-page {
+  align-content: center;
+  justify-items: center;
+  gap: 14px;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #dfe8dc;
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: nextbites-spin 800ms linear infinite;
+}
+
+.loading-message {
+  margin: 0;
+  color: var(--muted);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+}
+
+@keyframes nextbites-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .site-footer {
   display: flex;
   width: min(1120px, calc(100% - 48px));
@@ -707,6 +804,10 @@ main {
     gap: 28px;
     padding: 23px 20px 28px;
   }
+
+  .state-card {
+    padding: 34px 22px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -715,5 +816,9 @@ main {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .loading-spinner {
+    animation: none !important;
   }
 }

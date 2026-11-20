@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getRecipe, recipes } from "../../data/recipes";
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return recipes.map(({ id }) => ({ id }));
 }
