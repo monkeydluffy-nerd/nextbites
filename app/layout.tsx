@@ -19,9 +19,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               </span>
               <span>nextbites</span>
             </Link>
-            <a className="nav-link" href="#recipes">
+            <Link className="nav-link" href="/#recipes">
               Explore recipes <span aria-hidden="true">↗</span>
-            </a>
+            </Link>
           </nav>
         </header>
         {children}
